@@ -20,7 +20,7 @@ const myMap = {
     displayMap: {},
     businessObject: {}, // object from foursquare function. now I need to filter out the lat and long, and location info
     businessInfo: [],
-
+    
     buildMap: function() {
         this.displayMap = L.map('userMap').setView([this.coordinates[0], this.coordinates[1]], 15);
 
@@ -31,7 +31,7 @@ const myMap = {
 
         L.marker([this.coordinates[0], this.coordinates[1]]).addTo(this.displayMap).bindPopup('<p1><b>Your Location</b></p1>').openPopup();
     },
-
+    // creates an array of the 5 closest businesses and adds markers to the map. 
     addBusinessInfo: function(objectName) {
         for (i=0; i< objectName.length; i++) {
             this.businessInfo[i]= ({
@@ -41,9 +41,11 @@ const myMap = {
                 long: objectName[i].geocodes.main.longitude
             })
         }
+        for (i=0; i< this.businessInfo.length; i++) {
+            L.marker([this.businessInfo[i].lat, this.businessInfo[i].long]).addTo(this.displayMap).bindPopup('<p1><b>"${this.businessInfo[i].name"}</b></p1>').openPopup()
+        }
         console.log("business info after addBusinessInfo function for loop: ", this.businessInfo)
-    }
-
+    },
 
 }
 
