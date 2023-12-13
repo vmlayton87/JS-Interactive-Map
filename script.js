@@ -6,12 +6,12 @@ async function getCoords (){
     let currentPos = await new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject)
     })
-    console.log(currentPos)
+    //console.log(currentPos)
     
     return [currentPos.coords.latitude, currentPos.coords.longitude]
 }
 
-console.log(getCoords())  
+//console.log(getCoords())  
 
 // create user location map
 
@@ -38,7 +38,7 @@ window.onload = async () => {
     const coords = await getCoords()
     currentLocationMap.coordinates = coords
     currentLocationMap.buildMap()
-    console.log(currentLocationMap)
+    //console.log(currentLocationMap)
 }
 
 // When user selects a category from the drop down menu, show 5 closest locations that match that category. 
@@ -48,7 +48,7 @@ window.onload = async () => {
     let selectCategoryElement = document.getElementById("location-category-select")
 
     // add event listener
-    document.getElementById("location-category-select").onchange = function() {myFunction(this.value)};
+    document.getElementById("location-category-select").onchange = function() {placeSearch(this.value,currentLocationMap.coordinates)};
 
     // function for things to happen when category is selected
     function myFunction(val) {
@@ -58,4 +58,33 @@ window.onload = async () => {
    
     
     //buildCategoryMap:
+    //const buildCategoryMap = {}
+    async function placeSearch(category,latLong) {
+        try {
+            const searchParams = new URLSearchParams({
+              query: category,
+              ll: latLong,
+              open_now: 'true',
+              sort: 'DISTANCE',
+              limit: 5
+            });
+            const results = await fetch(
+              `https://api.foursquare.com/v3/places/search?${searchParams}`,
+              {
+                method: 'GET',
+                headers: {
+                  Accept: 'application/json',
+                  Authorization: 'fsq31kaK6M0eHOYrzVjc66oAKgQ7sAg6pwkxvyqH+F3ixUU=',
+                }
+              }
+            );
+            const data = await results.json();
+            console.log(data)
+            return data;
+        } catch (err) {
+            console.error(err);
+        } 
+        
+    }
+    
 
