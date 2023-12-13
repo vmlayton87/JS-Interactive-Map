@@ -2,7 +2,7 @@
 
 // users current location function
 
-async function getCoords (){
+async function getCurrentCoords (){
     let currentPos = await new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject)
     })
@@ -18,6 +18,8 @@ async function getCoords (){
 const myMap = {
     coordinates: [],
     displayMap: {},
+    businessObject: {}, // object from foursquare function. now I need to filter out the lat and long, and location info
+    businessInfo: [],
 
     buildMap: function() {
         this.displayMap = L.map('userMap').setView([this.coordinates[0], this.coordinates[1]], 15);
@@ -28,42 +30,45 @@ const myMap = {
         }).addTo(this.displayMap);
 
         L.marker([this.coordinates[0], this.coordinates[1]]).addTo(this.displayMap).bindPopup('<p1><b>Your Location</b></p1>').openPopup();
-    }
-}
+    },
 
+    addBusinessInfo: function(objectName) {
+        for (i=0; i< objectName.length; i++) {
+            this.businessInfo[i]= ({
+                name: objectName[i].name,
+                address: objectName[i].location.formatted_address,
+                lat: objectName[i].geocodes.main.latitude,
+                long: objectName[i].geocodes.main.longitude
+            })
+        }
+        console.log("business info after addBusinessInfo function for loop: ", this.businessInfo)
+    }
+
+
+}
 
 // makes current coordinates available to use in create map function/object and adds the map onto the page
 // creates a map in the div using the users current location
 window.onload = async () => {
-    const coords = await getCoords()
+    const coords = await getCurrentCoords()
     myMap.coordinates = coords
     myMap.buildMap()
     //console.log(myMap)
 }
 
-// When user selects a category from the drop down menu, show 5 closest locations that match that category. 
-
-
-    //grab the select element drop down menu
-    let selectCategoryElement = document.getElementById("location-category-select")
-
-    // add event listener
-   // document.getElementById("location-category-select").onchange = function() {placeSearch(this.value,currentLocationMap.coordinates)};
-
-    // function for things to happen when category is selected
-    function myFunction(val) {
-    alert("The input value has changed. The new value is: " + val);
-    }
+async function getBusinessMarkers (category,latLong){
+    const businessData = await placeSearch(category,latLong)
+    myMap.businessObject = businessData
+    // console.log("inside get business marker function: business object inside myMap object", myMap.businessObject)
+    // console.log("business info object initial keys: ", myMap.businessInfo)
+    myMap.addBusinessInfo(myMap.businessObject)
     
-   
-    
-    // buildCategoryMap:
+}
+let selectCategoryElement = document.getElementById("location-category-select")
+selectCategoryElement.onchange = function() {getBusinessMarkers(this.value, myMap.coordinates)}
 
-        //grab the select element drop down menu and add event listener
-        selectCategoryElement = document.getElementById("location-category-select").onchange = function() {
-            placeSearch(this.value, myMap.coordinates)
-            console.log("data from the element select: " , placeSearch(this.value, myMap.coordinates))
-        }
+
+
 
         async function placeSearch (category,latLong) {
             try {
@@ -85,9 +90,9 @@ window.onload = async () => {
                   }
                 );
                 const data = await results.json();
-                console.log("data inside the function: " , data)
-                const businesses = data.results // an array of the 5 businesses
-                console.log("business info inside function: ", businesses) 
+                console.log("data inside the foursquare function: " , data)
+                const businesses = data.results // an object of the 5 businesses
+                console.log("business info inside foursquare function: ", businesses) 
                 return businesses;
             } catch (err) {
                 console.error(err);
