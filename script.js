@@ -13,9 +13,9 @@ async function getCoords (){
 
 console.log(getCoords())  
 
-// create map
+// create user location map
 
-const myMap = {
+const currentLocationMap = {
     coordinates: [],
 
     map: {},
@@ -32,11 +32,30 @@ const myMap = {
     }
 }
 
+
 // makes current coordinates available to use in create map function/object and adds the map onto the page
 window.onload = async () => {
     const coords = await getCoords()
-    myMap.coordinates = coords
-    myMap.buildMap()
-    console.log(myMap)
+    currentLocationMap.coordinates = coords
+    currentLocationMap.buildMap()
+    console.log(currentLocationMap)
 }
+
+// When user selects a category from the drop down menu, show 5 closest locations that match that category. 
+
+
+    //grab the select element drop down menu
+    let selectCategoryElement = document.getElementById("location-category-select")
+
+    // add event listener
+    document.getElementById("location-category-select").onchange = function() {myFunction(this.value)};
+
+    // function for things to happen when category is selected
+    function myFunction(val) {
+    alert("The input value has changed. The new value is: " + val);
+    }
+    
+   
+    
+    //buildCategoryMap:
 
