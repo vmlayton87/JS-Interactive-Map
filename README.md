@@ -10,6 +10,10 @@ Allow the user to select a business type from a list and map the five nearest lo
 
 coffee, restaurant, hotel, and market
 
-Next steps: need to create an event listener for the drop down menu selections. 
+need to create an event listener for the drop down menu selections. 
 
 read the documentation for leaflet maps and foursquare api. look for ways to add the 5 closest locations based on the category selected in the drop down menu. 
+
+What I still want to do: 
+render the map to show all markers at the same time when they are created. 
+remove the preiously created markers when a new category is selected

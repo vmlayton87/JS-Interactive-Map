@@ -1,25 +1,29 @@
-// comments
-
-// users current location function
+/***********************************************************
+users current location function, from a previous assignment
+************************************************************/
 
 async function getCurrentCoords (){
     let currentPos = await new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject)
     })
+    // console log the promise to see where to get the latitude and longitude values
     //console.log(currentPos)
     
     return [currentPos.coords.latitude, currentPos.coords.longitude]
 }
 
-//console.log(getCoords())  
+// console log the function to make sure it works and returns the lat and long numbers
+// console.log(getCoords())  
 
-// user location map object
+/***********************
+user location map object
+***********************/
 
 const myMap = {
-    coordinates: [],
-    displayMap: {},
+    coordinates: [], // the coordinates from the getcoords function. used to render map 
+    displayMap: {}, //the map object to display on the webpage
     businessObject: {}, // object from foursquare function. now I need to filter out the lat and long, and location info
-    businessInfo: [],
+    businessInfo: [], // relevant business info to use for making the map markers
     
     buildMap: function() {
         this.displayMap = L.map('userMap').setView([this.coordinates[0], this.coordinates[1]], 15);
@@ -42,7 +46,10 @@ const myMap = {
             })
         }
         for (i=0; i< this.businessInfo.length; i++) {
-            L.marker([this.businessInfo[i].lat, this.businessInfo[i].long]).addTo(this.displayMap).bindPopup('<p1><b>"${this.businessInfo[i].name"}</b></p1>').openPopup()
+            L.marker([this.businessInfo[i].lat, this.businessInfo[i].long])
+                .addTo(this.displayMap)
+                .bindPopup(`<p1><b>${this.businessInfo[i].name}</b></p1>`)
+                .openPopup()
         }
         console.log("business info after addBusinessInfo function for loop: ", this.businessInfo)
     },
@@ -59,45 +66,50 @@ window.onload = async () => {
 }
 
 async function getBusinessMarkers (category,latLong){
-    const businessData = await placeSearch(category,latLong)
-    myMap.businessObject = businessData
+    const businessData = await placeSearch(category,latLong) // uses foursquare function to get the 5 businesses of the selected category
+    myMap.businessObject = businessData // saves the businesses to an object.
+    // console logs used to make sure the functions were working how I intended. Also helps to see where information is going.
     // console.log("inside get business marker function: business object inside myMap object", myMap.businessObject)
     // console.log("business info object initial keys: ", myMap.businessInfo)
     myMap.addBusinessInfo(myMap.businessObject)
     
 }
+
+// when a category is selected from the drop down menu, this calls the function that creates the markers on the map. 
 let selectCategoryElement = document.getElementById("location-category-select")
 selectCategoryElement.onchange = function() {getBusinessMarkers(this.value, myMap.coordinates)}
 
 
+/*******************************************************************************
+ function from foursquare to find the 5 closest locations of the chosen category
+ *******************************************************************************/
 
-
-        async function placeSearch (category,latLong) {
-            try {
-                const searchParams = new URLSearchParams({
-                  query: category,
-                  ll: latLong,
-                  open_now: 'true',
-                  sort: 'DISTANCE',
-                  limit: 5
-                });
-                const results = await fetch(
-                  `https://api.foursquare.com/v3/places/search?${searchParams}`,
-                  {
-                    method: 'GET',
-                    headers: {
-                      Accept: 'application/json',
-                      Authorization: 'fsq31kaK6M0eHOYrzVjc66oAKgQ7sAg6pwkxvyqH+F3ixUU=',
-                    }
-                  }
-                );
-                const data = await results.json();
-                console.log("data inside the foursquare function: " , data)
-                const businesses = data.results // an object of the 5 businesses
-                console.log("business info inside foursquare function: ", businesses) 
-                return businesses;
-            } catch (err) {
-                console.error(err);
-            } 
-        }
+async function placeSearch (category,latLong) {
+    try {
+        const searchParams = new URLSearchParams({
+            query: category,
+            ll: latLong,
+            open_now: 'true',
+            sort: 'DISTANCE',
+            limit: 5
+        });
+        const results = await fetch(
+            `https://api.foursquare.com/v3/places/search?${searchParams}`,
+            {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                Authorization: 'fsq31kaK6M0eHOYrzVjc66oAKgQ7sAg6pwkxvyqH+F3ixUU=', // my API key
+            }
+            }
+        );
+        const data = await results.json();
+        console.log("data inside the foursquare function: " , data)
+        const businesses = data.results // an object of the 5 businesses
+        console.log("business info inside foursquare function: ", businesses) 
+        return businesses;
+    } catch (err) {
+        console.error(err);
+    } 
+}
 

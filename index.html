@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- my css file-->
     <link rel="stylesheet" href="/style.css">
+    <!-- Leaflet links for map and the styles for it -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
      crossorigin=""/>
@@ -13,7 +15,8 @@
     <title>Document</title>
 </head>
 <body>
-    <label for="pet-select">I am looking for:</label>
+    <!-- label and drop down menu-->
+    <label for="location-category-select">I am looking for:</label>
 
 <select name="locationCategory" id="location-category-select">
   <option value="">--Please choose an option--</option>
@@ -23,7 +26,7 @@
   <option value="market">Market</option>
 </select>
     <div id="userMap"></div>
-
+<!-- my script file -->
 <script src="/script.js"></script>
 </body>
 </html>

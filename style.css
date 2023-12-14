@@ -1,5 +1,6 @@
 /* comments */
-
+/* have map take up 75% of the viewport height*/
+/* background color is to see the space if there is no map rendered*/
 #userMap { 
     height: 75vh; 
     background-color: grey;
